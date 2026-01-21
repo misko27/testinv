@@ -12,8 +12,8 @@ import {
   providedIn: 'root',
 })
 export class StockService {
-  private readonly API_KEY = 'NXEGYKFS2VLPL7RY'; // Replace with your API key for full access
-  private readonly BASE_URL = 'https://www.alphavantage.co/query';
+  // Point to the local Node.js proxy server
+  private readonly BASE_URL = 'http://localhost:3000/api';
 
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
@@ -21,35 +21,32 @@ export class StockService {
   constructor(private http: HttpClient) {}
 
   /**
-   * Get real-time quote for a stock symbol
+   * Get real-time quote for a stock symbol (via Yahoo Finance)
    */
   getQuote(symbol: string): Observable<StockQuote | null> {
     this.loading.set(true);
     this.error.set(null);
 
-    const url = `${this.BASE_URL}?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${this.API_KEY}`;
-
-    return this.http.get<any>(url).pipe(
-      map((response) => {
+    return this.http.get<any>(`${this.BASE_URL}/quote/${symbol}`).pipe(
+      map((data) => {
         this.loading.set(false);
-        const quote = response['Global Quote'];
-
-        if (!quote || Object.keys(quote).length === 0) {
+        if (!data) {
           this.error.set('No data found for this symbol');
           return null;
         }
 
         return {
-          symbol: quote['01. symbol'],
-          open: parseFloat(quote['02. open']),
-          high: parseFloat(quote['03. high']),
-          low: parseFloat(quote['04. low']),
-          price: parseFloat(quote['05. price']),
-          volume: parseInt(quote['06. volume']),
-          latestTradingDay: quote['07. latest trading day'],
-          previousClose: parseFloat(quote['08. previous close']),
-          change: parseFloat(quote['09. change']),
-          changePercent: quote['10. change percent'],
+          symbol: data.symbol,
+          open: data.regularMarketOpen,
+          high: data.regularMarketDayHigh,
+          low: data.regularMarketDayLow,
+          price: data.regularMarketPrice,
+          volume: data.regularMarketVolume,
+          latestTradingDay: new Date(data.regularMarketTime).toISOString().split('T')[0],
+          previousClose: data.regularMarketPreviousClose,
+          change: data.regularMarketChange,
+          changePercent: data.regularMarketChangePercent?.toFixed(2) + '%',
+          currency: data.currency || 'USD',
         } as StockQuote;
       }),
       catchError((err) => {
@@ -62,26 +59,26 @@ export class StockService {
   }
 
   /**
-   * Search for stocks by keyword
+   * Search for stocks by keyword (via Yahoo Finance)
    */
   searchStocks(keyword: string): Observable<StockSearchResult[]> {
     this.loading.set(true);
     this.error.set(null);
 
-    const url = `${this.BASE_URL}?function=SYMBOL_SEARCH&keywords=${keyword}&apikey=${this.API_KEY}`;
-
-    return this.http.get<any>(url).pipe(
+    return this.http.get<any>(`${this.BASE_URL}/search/${keyword}`).pipe(
       map((response) => {
         this.loading.set(false);
-        const matches = response['bestMatches'] || [];
+        const quotes = response.quotes || [];
 
-        return matches.map((match: any) => ({
-          symbol: match['1. symbol'],
-          name: match['2. name'],
-          type: match['3. type'],
-          region: match['4. region'],
-          currency: match['8. currency'],
-        })) as StockSearchResult[];
+        return quotes
+          .filter((q: any) => q.isYahooFinance)
+          .map((match: any) => ({
+            symbol: match.symbol,
+            name: match.shortname || match.longname,
+            type: match.quoteType,
+            region: match.exchange,
+            currency: match.currency || 'USD',
+          })) as StockSearchResult[];
       }),
       catchError((err) => {
         this.loading.set(false);
@@ -93,34 +90,30 @@ export class StockService {
   }
 
   /**
-   * Get daily time series data for a stock
+   * Get daily time series data for a stock (via Yahoo Finance)
    */
   getDailyTimeSeries(symbol: string): Observable<StockTimeSeries | null> {
     this.loading.set(true);
     this.error.set(null);
 
-    const url = `${this.BASE_URL}?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${this.API_KEY}`;
-
-    return this.http.get<any>(url).pipe(
+    return this.http.get<any[]>(`${this.BASE_URL}/history/${symbol}`).pipe(
       map((response) => {
         this.loading.set(false);
-        const timeSeries = response['Time Series (Daily)'];
-
-        if (!timeSeries) {
+        if (!response || response.length === 0) {
           this.error.set('No time series data found');
           return null;
         }
 
-        const data: StockTimeSeriesEntry[] = Object.entries(timeSeries)
-          .slice(0, 30) // Last 30 days
-          .map(([date, values]: [string, any]) => ({
-            date,
-            open: parseFloat(values['1. open']),
-            high: parseFloat(values['2. high']),
-            low: parseFloat(values['3. low']),
-            close: parseFloat(values['4. close']),
-            volume: parseInt(values['5. volume']),
-          }));
+        const data: StockTimeSeriesEntry[] = response
+          .map((entry: any) => ({
+            date: new Date(entry.date).toISOString().split('T')[0],
+            open: entry.open,
+            high: entry.high,
+            low: entry.low,
+            close: entry.close,
+            volume: entry.volume,
+          }))
+          .reverse(); // Newest first
 
         return { symbol, data };
       }),

@@ -9,6 +9,7 @@ export interface StockQuote {
   previousClose: number;
   change: number;
   changePercent: string;
+  currency: string;
 }
 
 export interface StockSearchResult {

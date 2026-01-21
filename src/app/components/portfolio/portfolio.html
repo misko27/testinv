@@ -1,9 +1,6 @@
 <div class="portfolio-container">
   <div class="portfolio-header">
     <h2>My Portfolio</h2>
-    <button class="refresh-btn" (click)="refreshPrices()" [disabled]="loading()">
-      {{ loading() ? 'Updating...' : '🔄 Refresh Prices' }}
-    </button>
   </div>
 
   <!-- Portfolio Summary -->
@@ -27,32 +24,76 @@
     </div>
   </div>
 
+  <!-- Portfolio Allocation Chart -->
+  <div class="allocation-section">
+    <h3>Portfolio Allocation</h3>
+    <div class="allocation-content">
+      <div class="donut-chart" [style.background]="chartGradient()">
+        <div class="donut-hole">
+          <span class="donut-total">{{ allocation().length }}</span>
+          <span class="donut-label">Holdings</span>
+        </div>
+      </div>
+      <div class="allocation-legend">
+        @for (item of allocation(); track item.symbol) {
+          <div class="legend-item">
+            <span class="legend-color" [style.background]="item.color"></span>
+            <span class="legend-symbol">{{ item.symbol }}</span>
+            <span class="legend-percent">{{ item.percent | number: '1.1-1' }}%</span>
+            <span class="legend-value">{{ formatCurrency(item.value) }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
   <!-- Holdings Table -->
   <div class="table-container">
     <table class="holdings-table">
       <thead>
         <tr>
-          <th>Symbol</th>
-          <th>Name</th>
-          <th>Quantity</th>
-          <th>Last Price</th>
-          <th>Market Value</th>
-          <th>Average Cost</th>
-          <th>Total Cost</th>
-          <th>Gain/Loss</th>
-          <th>Gain/Loss %</th>
-          <th>Actions</th>
+          <th class="sortable" (click)="toggleSort('symbol')">
+            Symbol <span class="sort-icon">{{ getSortIcon('symbol') }}</span>
+          </th>
+          <th class="sortable" (click)="toggleSort('name')">
+            Name <span class="sort-icon">{{ getSortIcon('name') }}</span>
+          </th>
+          <th class="sortable" (click)="toggleSort('quantity')">
+            Quantity <span class="sort-icon">{{ getSortIcon('quantity') }}</span>
+          </th>
+          <th class="sortable" (click)="toggleSort('currentPrice')">
+            Last Price <span class="sort-icon">{{ getSortIcon('currentPrice') }}</span>
+          </th>
+          <th class="sortable" (click)="toggleSort('marketValue')">
+            Market Value <span class="sort-icon">{{ getSortIcon('marketValue') }}</span>
+          </th>
+          <th class="sortable" (click)="toggleSort('averageCost')">
+            Average Cost <span class="sort-icon">{{ getSortIcon('averageCost') }}</span>
+          </th>
+          <th class="sortable" (click)="toggleSort('totalCost')">
+            Total Cost <span class="sort-icon">{{ getSortIcon('totalCost') }}</span>
+          </th>
+          <th class="sortable" (click)="toggleSort('gainLoss')">
+            Gain/Loss <span class="sort-icon">{{ getSortIcon('gainLoss') }}</span>
+          </th>
+          <th class="sortable" (click)="toggleSort('gainLossPercent')">
+            Gain/Loss % <span class="sort-icon">{{ getSortIcon('gainLossPercent') }}</span>
+          </th>
         </tr>
       </thead>
       <tbody>
-        @for (holding of holdings(); track holding.id) {
+        @for (holding of sortedHoldings(); track holding.id) {
           <tr>
             <td class="symbol-cell">{{ holding.symbol }}</td>
             <td class="name-cell">{{ holding.name }}</td>
             <td class="quantity-cell">{{ holding.quantity }}</td>
-            <td class="price-cell">{{ formatCurrency(holding.currentPrice) }}</td>
+            <td class="price-cell">
+              {{ formatPriceWithCurrency(holding.currentPrice, holding.currency) }}
+            </td>
             <td class="value-cell">{{ formatCurrency(holding.marketValue) }}</td>
-            <td class="cost-cell">{{ formatCurrency(holding.averageCost) }}</td>
+            <td class="cost-cell">
+              {{ formatPriceWithCurrency(holding.averageCost, holding.currency) }}
+            </td>
             <td class="cost-cell">{{ formatCurrency(holding.totalCost) }}</td>
             <td
               class="gain-loss-cell"
@@ -68,11 +109,6 @@
             >
               {{ formatPercent(holding.gainLossPercent) }}
             </td>
-            <td class="actions-cell">
-              <button class="remove-btn" (click)="removeHolding(holding.id)" title="Remove holding">
-                🗑️
-              </button>
-            </td>
           </tr>
         }
       </tbody>
@@ -85,12 +121,4 @@
       <p>Add some stocks to get started!</p>
     </div>
   }
-
-  <!-- Footer Note -->
-  <div class="footer-note">
-    <p>
-      💼 Portfolio data is stored locally in your browser. Prices are updated from Alpha Vantage
-      API.
-    </p>
-  </div>
 </div>

@@ -3,11 +3,12 @@ export interface PortfolioHolding {
   symbol: string;
   name: string;
   quantity: number;
-  averageCost: number; // Cost per share when bought
-  totalCost: number; // quantity * averageCost
-  currentPrice: number;
-  marketValue: number; // quantity * currentPrice
-  gainLoss: number; // marketValue - totalCost
+  averageCost: number; // Cost per share when bought (in original currency)
+  totalCost: number; // quantity * averageCost (converted to USD)
+  currentPrice: number; // Price in original currency for display
+  currency: string; // Original currency (USD, CAD, etc.)
+  marketValue: number; // quantity * currentPrice converted to USD
+  gainLoss: number; // marketValue - totalCost (both in USD)
   gainLossPercent: number; // (gainLoss / totalCost) * 100
   lastUpdated: Date;
 }
