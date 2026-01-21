@@ -8,7 +8,7 @@ import { PortfolioHolding } from '../../models/portfolio.model';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './portfolio.html',
-  styleUrl: './portfolio.scss'
+  styleUrl: './portfolio.scss',
 })
 export class Portfolio {
   private portfolioService = inject(PortfolioService);

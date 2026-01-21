@@ -1,11 +1,7 @@
 <div class="portfolio-container">
   <div class="portfolio-header">
     <h2>My Portfolio</h2>
-    <button
-      class="refresh-btn"
-      (click)="refreshPrices()"
-      [disabled]="loading()"
-    >
+    <button class="refresh-btn" (click)="refreshPrices()" [disabled]="loading()">
       {{ loading() ? 'Updating...' : '🔄 Refresh Prices' }}
     </button>
   </div>
@@ -20,7 +16,11 @@
       <span class="label">Total Cost</span>
       <span class="value">{{ formatCurrency(summary().totalCost) }}</span>
     </div>
-    <div class="summary-card" [class.positive]="isPositive(summary().totalGainLoss)" [class.negative]="!isPositive(summary().totalGainLoss)">
+    <div
+      class="summary-card"
+      [class.positive]="isPositive(summary().totalGainLoss)"
+      [class.negative]="!isPositive(summary().totalGainLoss)"
+    >
       <span class="label">Total Gain/Loss</span>
       <span class="value">{{ formatCurrency(summary().totalGainLoss) }}</span>
       <span class="percent">{{ formatPercent(summary().totalGainLossPercent) }}</span>
@@ -69,11 +69,7 @@
               {{ formatPercent(holding.gainLossPercent) }}
             </td>
             <td class="actions-cell">
-              <button
-                class="remove-btn"
-                (click)="removeHolding(holding.id)"
-                title="Remove holding"
-              >
+              <button class="remove-btn" (click)="removeHolding(holding.id)" title="Remove holding">
                 🗑️
               </button>
             </td>
@@ -93,8 +89,8 @@
   <!-- Footer Note -->
   <div class="footer-note">
     <p>
-      💼 Portfolio data is stored locally in your browser.
-      Prices are updated from Alpha Vantage API.
+      💼 Portfolio data is stored locally in your browser. Prices are updated from Alpha Vantage
+      API.
     </p>
   </div>
 </div>

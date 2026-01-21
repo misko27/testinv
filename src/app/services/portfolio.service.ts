@@ -3,7 +3,7 @@ import { PortfolioHolding, PortfolioSummary } from '../models/portfolio.model';
 import { StockService } from './stock.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PortfolioService {
   private readonly STORAGE_KEY = 'portfolio-holdings';
@@ -15,40 +15,40 @@ export class PortfolioService {
       symbol: 'AAPL',
       name: 'Apple Inc.',
       quantity: 10,
-      averageCost: 150.00,
-      totalCost: 1500.00,
+      averageCost: 150.0,
+      totalCost: 1500.0,
       currentPrice: 0,
       marketValue: 0,
       gainLoss: 0,
       gainLossPercent: 0,
-      lastUpdated: new Date()
+      lastUpdated: new Date(),
     },
     {
       id: '2',
       symbol: 'GOOGL',
       name: 'Alphabet Inc.',
       quantity: 5,
-      averageCost: 2500.00,
-      totalCost: 12500.00,
+      averageCost: 2500.0,
+      totalCost: 12500.0,
       currentPrice: 0,
       marketValue: 0,
       gainLoss: 0,
       gainLossPercent: 0,
-      lastUpdated: new Date()
+      lastUpdated: new Date(),
     },
     {
       id: '3',
       symbol: 'MSFT',
       name: 'Microsoft Corporation',
       quantity: 8,
-      averageCost: 300.00,
-      totalCost: 2400.00,
+      averageCost: 300.0,
+      totalCost: 2400.0,
       currentPrice: 0,
       marketValue: 0,
       gainLoss: 0,
       gainLossPercent: 0,
-      lastUpdated: new Date()
-    }
+      lastUpdated: new Date(),
+    },
   ];
 
   readonly holdings = signal<PortfolioHolding[]>(this.loadHoldings());
@@ -67,7 +67,7 @@ export class PortfolioService {
       totalCost,
       totalGainLoss,
       totalGainLossPercent,
-      holdings
+      holdings,
     } as PortfolioSummary;
   });
 
@@ -88,7 +88,7 @@ export class PortfolioService {
       const parsed = JSON.parse(stored);
       return parsed.map((h: any) => ({
         ...h,
-        lastUpdated: new Date(h.lastUpdated)
+        lastUpdated: new Date(h.lastUpdated),
       }));
     }
     return [];
@@ -117,7 +117,7 @@ export class PortfolioService {
             marketValue,
             gainLoss,
             gainLossPercent,
-            lastUpdated: new Date()
+            lastUpdated: new Date(),
           } as PortfolioHolding;
         }
       } catch (error) {
@@ -137,7 +137,12 @@ export class PortfolioService {
     }
   }
 
-  addHolding(holding: Omit<PortfolioHolding, 'id' | 'currentPrice' | 'marketValue' | 'gainLoss' | 'gainLossPercent' | 'lastUpdated'>): void {
+  addHolding(
+    holding: Omit<
+      PortfolioHolding,
+      'id' | 'currentPrice' | 'marketValue' | 'gainLoss' | 'gainLossPercent' | 'lastUpdated'
+    >,
+  ): void {
     const newHolding: PortfolioHolding = {
       ...holding,
       id: Date.now().toString(),
@@ -145,32 +150,28 @@ export class PortfolioService {
       marketValue: 0,
       gainLoss: 0,
       gainLossPercent: 0,
-      lastUpdated: new Date()
+      lastUpdated: new Date(),
     };
 
-    this.holdings.update(current => [...current, newHolding]);
+    this.holdings.update((current) => [...current, newHolding]);
     this.saveHoldings();
     this.updateAllPrices();
   }
 
   removeHolding(id: string): void {
-    this.holdings.update(current => current.filter(h => h.id !== id));
+    this.holdings.update((current) => current.filter((h) => h.id !== id));
     this.saveHoldings();
   }
 
   updateHolding(id: string, updates: Partial<PortfolioHolding>): void {
-    this.holdings.update(current =>
-      current.map(h =>
-        h.id === id ? { ...h, ...updates } : h
-      )
-    );
+    this.holdings.update((current) => current.map((h) => (h.id === id ? { ...h, ...updates } : h)));
     this.saveHoldings();
   }
 
   formatCurrency(value: number): string {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'USD',
     }).format(value);
   }
 
