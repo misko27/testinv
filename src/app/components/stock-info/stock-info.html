@@ -1,0 +1,126 @@
+<div class="stock-info-container">
+  <h2>Stock Market Information</h2>
+
+  <!-- Search Section -->
+  <div class="search-section">
+    <div class="search-box">
+      <input
+        type="text"
+        [ngModel]="searchQuery()"
+        (ngModelChange)="searchQuery.set($event)"
+        (keyup.enter)="onSearch()"
+        placeholder="Search stocks (e.g., Apple, AAPL)"
+        class="search-input"
+      />
+      <button (click)="onSearch()" [disabled]="loading()" class="search-btn">
+        {{ loading() ? 'Searching...' : 'Search' }}
+      </button>
+    </div>
+
+    <!-- Search Results Dropdown -->
+    @if (searchResults().length > 0) {
+      <div class="search-results">
+        @for (result of searchResults(); track result.symbol) {
+          <div class="search-result-item" (click)="selectStock(result.symbol)">
+            <span class="result-symbol">{{ result.symbol }}</span>
+            <span class="result-name">{{ result.name }}</span>
+            <span class="result-region">{{ result.region }}</span>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Popular Stocks -->
+  <div class="popular-stocks">
+    <span class="popular-label">Popular:</span>
+    @for (symbol of popularStocks; track symbol) {
+      <button
+        class="popular-btn"
+        [class.active]="selectedSymbol() === symbol"
+        (click)="selectStock(symbol)"
+      >
+        {{ symbol }}
+      </button>
+    }
+  </div>
+
+  <!-- Error Message -->
+  @if (error()) {
+    <div class="error-message">
+      {{ error() }}
+    </div>
+  }
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading">
+      <div class="spinner"></div>
+      <span>Loading stock data...</span>
+    </div>
+  }
+
+  <!-- Stock Quote Display -->
+  @if (quote(); as q) {
+    <div class="quote-card">
+      <div class="quote-header">
+        <div class="quote-title">
+          <h3>{{ q.symbol }}</h3>
+          <button class="close-btn" (click)="clearSelection()">×</button>
+        </div>
+        <div
+          class="quote-price"
+          [class.positive]="isPositiveChange(q)"
+          [class.negative]="!isPositiveChange(q)"
+        >
+          <span class="price">${{ formatNumber(q.price) }}</span>
+          <span class="change">
+            {{ isPositiveChange(q) ? '+' : '' }}{{ formatNumber(q.change) }} ({{ q.changePercent }})
+          </span>
+        </div>
+      </div>
+
+      <div class="quote-details">
+        <div class="detail-row">
+          <span class="label">Open</span>
+          <span class="value">${{ formatNumber(q.open) }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">High</span>
+          <span class="value">${{ formatNumber(q.high) }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Low</span>
+          <span class="value">${{ formatNumber(q.low) }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Previous Close</span>
+          <span class="value">${{ formatNumber(q.previousClose) }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Volume</span>
+          <span class="value">{{ formatVolume(q.volume) }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Latest Trading Day</span>
+          <span class="value">{{ q.latestTradingDay }}</span>
+        </div>
+      </div>
+
+      <button class="refresh-btn" (click)="refreshQuote()" [disabled]="loading()">
+        🔄 Refresh
+      </button>
+    </div>
+  }
+
+  <!-- API Note -->
+  <div class="api-note">
+    <p>
+      📊 Using Alpha Vantage API.
+      <a href="https://www.alphavantage.co/support/#api-key" target="_blank">
+        Get a free API key
+      </a>
+      for unlimited access.
+    </p>
+  </div>
+</div>
