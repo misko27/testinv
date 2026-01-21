@@ -1,0 +1,264 @@
+.portfolio-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+.portfolio-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.portfolio-header h2 {
+  margin: 0;
+  color: #1a1a2e;
+  font-size: 2rem;
+}
+
+.refresh-btn {
+  padding: 10px 20px;
+  background: #4361ee;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.refresh-btn:hover:not(:disabled) {
+  background: #3a50d9;
+}
+
+.refresh-btn:disabled {
+  background: #a0a0a0;
+  cursor: not-allowed;
+}
+
+/* Portfolio Summary */
+.portfolio-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.summary-card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.summary-card .label {
+  color: #666;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.summary-card .value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.summary-card .percent {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.summary-card.positive .value,
+.summary-card.positive .percent {
+  color: #10b981;
+}
+
+.summary-card.negative .value,
+.summary-card.negative .percent {
+  color: #ef4444;
+}
+
+/* Table Styles */
+.table-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e0e0e0;
+  overflow-x: auto;
+}
+
+.holdings-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.holdings-table thead th {
+  background: #f8f9fa;
+  padding: 16px 12px;
+  text-align: left;
+  font-weight: 600;
+  color: #1a1a2e;
+  border-bottom: 2px solid #e0e0e0;
+  white-space: nowrap;
+}
+
+.holdings-table tbody td {
+  padding: 16px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  vertical-align: middle;
+}
+
+.holdings-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+/* Cell Styles */
+.symbol-cell {
+  font-weight: 600;
+  color: #4361ee;
+  font-size: 1rem;
+}
+
+.name-cell {
+  color: #1a1a2e;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.quantity-cell {
+  text-align: center;
+  font-weight: 500;
+}
+
+.price-cell,
+.value-cell,
+.cost-cell {
+  text-align: right;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-weight: 500;
+}
+
+.gain-loss-cell,
+.percent-cell {
+  text-align: right;
+  font-weight: 600;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.gain-loss-cell.positive,
+.percent-cell.positive {
+  color: #10b981;
+}
+
+.gain-loss-cell.negative,
+.percent-cell.negative {
+  color: #ef4444;
+}
+
+.actions-cell {
+  text-align: center;
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background 0.2s;
+  font-size: 1rem;
+}
+
+.remove-btn:hover {
+  background: #fee2e2;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: #666;
+}
+
+.empty-state p {
+  margin: 8px 0;
+  font-size: 1.1rem;
+}
+
+.empty-state p:first-child {
+  font-weight: 500;
+  color: #1a1a2e;
+}
+
+/* Footer Note */
+.footer-note {
+  margin-top: 24px;
+  padding: 16px;
+  background: #f5f7ff;
+  border-radius: 8px;
+  text-align: center;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .portfolio-container {
+    padding: 16px;
+  }
+
+  .portfolio-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  .portfolio-header h2 {
+    text-align: center;
+  }
+
+  .portfolio-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .holdings-table {
+    font-size: 0.8rem;
+  }
+
+  .holdings-table thead th,
+  .holdings-table tbody td {
+    padding: 8px 6px;
+  }
+
+  .name-cell {
+    max-width: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  .holdings-table {
+    font-size: 0.75rem;
+  }
+
+  .holdings-table thead th,
+  .holdings-table tbody td {
+    padding: 6px 4px;
+  }
+
+  .summary-card {
+    padding: 16px;
+  }
+
+  .summary-card .value {
+    font-size: 1.25rem;
+  }
+}

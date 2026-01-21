@@ -1,1 +1,13 @@
-<router-outlet />
+<nav class="navbar">
+  <div class="nav-container">
+    <h1 class="nav-title">Invest Tracker</h1>
+    <div class="nav-links">
+      <a routerLink="/stocks" routerLinkActive="active" class="nav-link">Stock Search</a>
+      <a routerLink="/portfolio" routerLinkActive="active" class="nav-link">Portfolio</a>
+    </div>
+  </div>
+</nav>
+
+<main class="main-content">
+  <router-outlet />
+</main>
